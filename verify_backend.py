@@ -2,7 +2,8 @@ import requests
 import sys
 import json
 
-BASE_URL = "http://127.0.0.1:8000"
+import os
+BASE_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 
 try:
     print(f"Testing connection to {BASE_URL}/...")

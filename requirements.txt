@@ -5,3 +5,4 @@ groq
 bcrypt
 fastapi
 uvicorn
+sqlalchemy

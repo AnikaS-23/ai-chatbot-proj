@@ -1,25 +1,29 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+# Trigger reload
+from sqlalchemy.orm import Session
 from pydantic import BaseModel
+from typing import List, Dict, Any
 import bcrypt
-from typing import Dict, List, Optional
+
+from database import engine, get_db, Base
+from models import User, Chat
+
+# Create Tables
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Add CORS Middleware to allow frontend (Streamlit) to talk to backend from any domain
+# Add CORS Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# --- In-Memory Storage ---
-# Dictionary structure: { username: { "password": "hashed_pw", "chats": { chat_id: { ... } } } }
-APP_DATA: Dict[str, Dict] = {}
-
-# --- Data Models ---
+# --- Data Models (Pydantic) ---
 class UserAuth(BaseModel):
     username: str
     password: str
@@ -34,48 +38,86 @@ class ChatData(BaseModel):
 
 @app.get("/")
 def health_check():
-    return {"status": "running", "users": list(APP_DATA.keys())} # Debug info
+    return {"status": "running", "database": "sqlite"}
 
 @app.post("/register")
-def register(user: UserAuth):
-    if user.username in APP_DATA:
+def register(user_data: UserAuth, db: Session = Depends(get_db)):
+    # Check existing
+    existing_user = db.query(User).filter(User.username == user_data.username).first()
+    if existing_user:
         raise HTTPException(status_code=400, detail="Username already exists")
     
-    hashed = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-    APP_DATA[user.username] = {
-        "password": hashed,
-        "chats": {}
-    }
+    # Hash password
+    hashed = bcrypt.hashpw(user_data.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    
+    # Create user
+    new_user = User(username=user_data.username, password_hash=hashed)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    
     return {"message": "User registered successfully"}
 
 @app.post("/login")
-def login(user: UserAuth):
-    if user.username not in APP_DATA:
+def login(user_data: UserAuth, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == user_data.username).first()
+    if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    stored_hash = APP_DATA[user.username]["password"]
-    if bcrypt.checkpw(user.password.encode('utf-8'), stored_hash.encode('utf-8')):
+    if bcrypt.checkpw(user_data.password.encode('utf-8'), user.password_hash.encode('utf-8')):
         return {"message": "Login successful", "username": user.username}
     
     raise HTTPException(status_code=401, detail="Invalid credentials")
 
 @app.get("/history/{username}")
-def get_history(username: str):
-    return APP_DATA.get(username, {}).get("chats", {})
-
-@app.post("/history/save")
-def save_chat(chat: ChatData):
-    if chat.username in APP_DATA:
-        APP_DATA[chat.username]["chats"][chat.chat_id] = {
+def get_history(username: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+         # Return empty if user doesn't exist yet (or handle error)
+         return {}
+    
+    # Convert DB objects to nested dict format for frontend: {uuid: {title: ..., messages: ...}}
+    history = {}
+    for chat in user.chats:
+        history[chat.chat_uuid] = {
             "title": chat.title,
             "messages": chat.messages
         }
-        return {"status": "saved"}
-    raise HTTPException(status_code=404, detail="User not found")
+    return history
+
+@app.post("/history/save")
+def save_chat(chat_data: ChatData, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == chat_data.username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Check if chat exists
+    chat = db.query(Chat).filter(Chat.chat_uuid == chat_data.chat_id).first()
+    
+    if chat:
+        # Update existing
+        chat.title = chat_data.title
+        chat.messages = chat_data.messages
+    else:
+        # Create new
+        chat = Chat(
+            chat_uuid=chat_data.chat_id,
+            user_id=user.id,
+            title=chat_data.title,
+            messages=chat_data.messages
+        )
+        db.add(chat)
+    
+    db.commit()
+    return {"status": "saved"}
 
 @app.delete("/history/{username}")
-def clear_history(username: str):
-    if username in APP_DATA:
-        APP_DATA[username]["chats"] = {}
+def clear_history(username: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == username).first()
+    if user:
+        # Delete all chats for this user
+        db.query(Chat).filter(Chat.user_id == user.id).delete()
+        db.commit()
         return {"status": "cleared"}
+    
     raise HTTPException(status_code=404, detail="User not found")
