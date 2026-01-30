@@ -191,7 +191,7 @@ Frontend runs at:
 http://localhost:8501
 
 
-🧪 How It Works (Architecture)
+- 🧪 How It Works (Architecture)
 
 User (Browser)
 
@@ -216,16 +216,16 @@ Groq handles AI inference
 Chat responses are streamed token-by-token
 
 
-🔒 Security Notes
+- 🔒 Security Notes
 
 API keys stored in .env
 
 Sensitive files ignored via .gitignore
 
-Passwords are never exposed in frontend
+Passwords are never exposed in the frontend
 
 
-🌱 Future Improvements
+- 🌱 Future Improvements
 
 Database integration (PostgreSQL / MongoDB)
 
@@ -242,6 +242,7 @@ Deployment (Docker + Cloud)
 #### Author
 
 Anika Sharma
+
 Computer Science Engineering (Data Science)
 
 
