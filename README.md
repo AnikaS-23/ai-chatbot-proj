@@ -154,7 +154,6 @@ ai\_chatbot/
 
 git clone https://github.com/AnikaS-23/ai-chatbot-proj.git
 
-cd ai-chatbot-proj
 
 2️⃣ Create Virtual Environment
 
@@ -191,7 +190,7 @@ Frontend runs at:
 http://localhost:8501
 
 
-- 🧪 How It Works (Architecture)
+## 🧪 How It Works (Architecture)
 
 User (Browser)
 
@@ -216,27 +215,13 @@ Groq handles AI inference
 Chat responses are streamed token-by-token
 
 
-- 🔒 Security Notes
+## 🔒 Security Notes
 
 API keys stored in .env
 
 Sensitive files ignored via .gitignore
 
 Passwords are never exposed in the frontend
-
-
-- 🌱 Future Improvements
-
-Database integration (PostgreSQL / MongoDB)
-
-JWT-based authentication
-
-User profile settings
-
-Chat export (PDF / TXT)
-
-Deployment (Docker + Cloud)
-
 
 
 #### Author
