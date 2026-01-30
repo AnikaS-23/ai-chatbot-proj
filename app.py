@@ -11,8 +11,9 @@ load_dotenv()
 # Initialize Groq client
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-# API Configuration
-API_URL = "http://localhost:8000"
+# Api Configuration
+# Use environment variable for deployment, default to localhost for dev
+API_URL = os.getenv("API_URL", "http://localhost:8000")
 
 # System Prompt
 SYSTEM_PROMPT = "You are a helpful AI assistant."

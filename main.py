@@ -1,9 +1,19 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import bcrypt
 from typing import Dict, List, Optional
 
 app = FastAPI()
+
+# Add CORS Middleware to allow frontend (Streamlit) to talk to backend from any domain
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # --- In-Memory Storage ---
 # Dictionary structure: { username: { "password": "hashed_pw", "chats": { chat_id: { ... } } } }
