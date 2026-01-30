@@ -50,6 +50,31 @@ It uses \*\*Groq’s LLM API (LLaMA 3.1)\*\* for ultra-fast inference and a \*\*
 - Client-side cache + backend sync
 
 
+## 🗄 Database & Persistence
+
+AI ChatRobo uses SQLite with SQLAlchemy ORM to manage persistent data storage.
+
+Key Highlights:
+
+SQLite database (chatbot.db)
+
+SQLAlchemy ORM for database abstraction
+
+Session-based database access
+
+Safe connection handling using dependency injection
+
+Why SQLite + SQLAlchemy?
+
+Lightweight and easy to configure
+
+Ideal for local development and academic projects
+
+Easily upgradeable to PostgreSQL/MySQL in production
+
+The database layer ensures reliable storage of user data and chat history, making the application scalable and production-ready.
+
+
 ### 🎨 Modern UI (Streamlit)
 
 - Custom login \& signup UI
