@@ -154,6 +154,7 @@ ai\_chatbot/
 
 git clone https://github.com/AnikaS-23/ai-chatbot-proj.git
 
+cd ai-chatbot-proj
 
 2️⃣ Create Virtual Environment
 
@@ -206,13 +207,13 @@ FastAPI Backend
 
 Groq LLM API
 
-Frontend handles UI \& session state
+- Frontend handles UI \& session state
 
-Backend manages auth \& chat persistence
+- Backend manages auth \& chat persistence
 
-Groq handles AI inference
+- Groq handles AI inference
 
-Chat responses are streamed token-by-token
+- Chat responses are streamed token-by-token
 
 
 ## 🔒 Security Notes
@@ -224,7 +225,7 @@ Sensitive files ignored via .gitignore
 Passwords are never exposed in the frontend
 
 
-#### Author
+## Author
 
 Anika Sharma
 
