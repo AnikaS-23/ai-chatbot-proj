@@ -1,104 +1,85 @@
-\# 🤖 AI ChatRobo — Full-Stack AI Chatbot (Python + Groq LLM)
-
-
+# 🤖 AI ChatRobo — Full-Stack AI Chatbot (Python + Groq LLM)
 
 AI ChatRobo is a \*\*full-stack AI chatbot application built entirely in Python\*\*, featuring user authentication, chat history persistence, real-time streaming responses, and a modern Streamlit UI.  
 
 It uses \*\*Groq’s LLM API (LLaMA 3.1)\*\* for ultra-fast inference and a \*\*FastAPI backend\*\* for authentication and data handling.
 
 
-
----
-
+## 🚀 Key Features
 
 
-\## 🚀 Key Features
+### 🔐 Authentication System
+
+- User registration \& login
+
+- Secure password handling
+
+- Session-based authentication
+
+- Logout \& session reset
 
 
+### 💬 Intelligent Chat Interface
 
-\### 🔐 Authentication System
+- Real-time AI responses (token streaming)
 
-\- User registration \& login
+- Persistent multi-chat history per user
 
-\- Secure password handling
+- Automatic chat title generation
 
-\- Session-based authentication
-
-\- Logout \& session reset
-
+- Sidebar chat navigation 
 
 
-\### 💬 Intelligent Chat Interface
+### 🧠 AI Engine
 
-\- Real-time AI responses (token streaming)
+- Groq LLM integration (`llama-3.1-8b-instant`)
 
-\- Persistent multi-chat history per user
+- System-prompt controlled responses
 
-\- Automatic chat title generation
-
-\- Sidebar chat navigation 
+- Streaming completions for fast UX
 
 
+### 🗂 Chat History Management
 
-\### 🧠 AI Engine
+- Per-user chat storage
 
-\- Groq LLM integration (`llama-3.1-8b-instant`)
+- Create, switch, and delete chats
 
-\- System-prompt controlled responses
+- Clear entire chat history
 
-\- Streaming completions for fast UX
-
-
-
-\### 🗂 Chat History Management
-
-\- Per-user chat storage
-
-\- Create, switch, and delete chats
-
-\- Clear entire chat history
-
-\- Client-side cache + backend sync
+- Client-side cache + backend sync
 
 
+### 🎨 Modern UI (Streamlit)
 
-\### 🎨 Modern UI (Streamlit)
+- Custom login \& signup UI
 
-\- Custom login \& signup UI
+- Responsive two-column landing page
 
-\- Responsive two-column landing page
+- Sidebar navigation
 
-\- Sidebar navigation
+- Clean dark-theme styling
 
-\- Clean dark-theme styling
-
-\- Custom assets \& icons
-
+- Custom assets \& icons
 
 
----
+## 🧱 Tech Stack
 
 
+### Frontend
 
-\## 🧱 Tech Stack
+- \*\*Streamlit\*\*
 
+- Custom CSS
 
-
-\### Frontend
-
-\- \*\*Streamlit\*\*
-
-\- Custom CSS
-
-\- Session state management
+- Session state management
 
 
+### Backend
 
-\### Backend
+- \*\*FastAPI\*\*
 
-\- \*\*FastAPI\*\*
-
-\- REST APIs for:
+- REST APIs for:
 
 &nbsp; - Authentication
 
@@ -107,36 +88,27 @@ It uses \*\*Groq’s LLM API (LLaMA 3.1)\*\* for ultra-fast inference and a \*\*
 &nbsp; - Session handling
 
 
+### AI / LLM
 
-\### AI / LLM
+- \*\*Groq API\*\*
 
-\- \*\*Groq API\*\*
+- Model: `llama-3.1-8b-instant`
 
-\- Model: `llama-3.1-8b-instant`
-
-\- Streaming responses enabled
-
+- Streaming responses enabled
 
 
-\### Other
+### Other
 
-\- Python 3.10+
+- Python 3.10+
 
-\- Requests
+- Requests
 
-\- dotenv
+- dotenv
 
-\- UUID-based chat IDs
-
-
-
----
+- UUID-based chat IDs
 
 
-
-\## 📁 Project Structure
-
-
+## 📁 Project Structure
 
 ai\_chatbot/
 
@@ -175,18 +147,10 @@ ai\_chatbot/
 └── README.md
 
 
+## ⚙️ Setup Instructions
 
 
-
----
-
-
-
-\## ⚙️ Setup Instructions
-
-
-
-\### 1️⃣ Clone the Repository
+### 1️⃣ Clone the Repository
 
 git clone https://github.com/AnikaS-23/ai-chatbot-proj.git
 
@@ -206,13 +170,7 @@ pip install -r requirements.txt
 
 Create a .env file:
 
-
-
 GROQ\_API\_KEY=your\_groq\_api\_key\_here
-
-⚠️ .env is ignored by git for security reasons.
-
-
 
 ▶️ Running the Application
 
@@ -222,8 +180,6 @@ python main.py
 
 Backend runs at:
 
-
-
 http://localhost:8000
 
 Start Frontend (Streamlit)
@@ -231,8 +187,6 @@ Start Frontend (Streamlit)
 streamlit run app.py
 
 Frontend runs at:
-
-
 
 http://localhost:8501
 
@@ -254,54 +208,31 @@ Groq LLM API
 
 Frontend handles UI \& session state
 
-
-
 Backend manages auth \& chat persistence
-
-
 
 Groq handles AI inference
 
-
-
 Chat responses are streamed token-by-token
-
-
 
 🔒 Security Notes
 
 API keys stored in .env
 
-
-
 Sensitive files ignored via .gitignore
 
-
-
 Passwords never exposed in frontend
-
-
 
 🌱 Future Improvements
 
 Database integration (PostgreSQL / MongoDB)
 
-
-
 JWT-based authentication
-
-
 
 User profile settings
 
-
-
 Chat export (PDF / TXT)
 
-
-
 Deployment (Docker + Cloud)
-
 
 
 Author
