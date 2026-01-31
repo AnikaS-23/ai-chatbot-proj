@@ -127,81 +127,114 @@ if "user_chats" not in st.session_state:
 # --- AUTHENTICATION FLOW ---
 if not st.session_state.user:
     
-    # Custom CSS for Login Page Styling moved to Global
-
+    # --- Native Streamlit UI (No Custom CSS) ---
     
-    # Create two equal columns with large gap
-    left_col, right_col = st.columns(2, gap="large")
+    # 50/50 Split Layout
+    c1, c2 = st.columns([1, 1], gap="large")
     
-    # Left Column: Branding
-    with left_col:
-        st.markdown("<h1 style='color: white; font-weight: bold; font-size: 48px; margin-bottom: 20px;'>Welcome - AI ChatRobo</h1>", unsafe_allow_html=True)
+    # --- Left Column: Hero Visuals ---
+    with c1:
+        # Title using Streamlit native component
+        st.title("☺ Welcome - AI ChatRobo")
         
-        # Nested columns for Text | Robot layout
-        text_col, img_col = st.columns([1, 1], gap="small", vertical_alignment="center")
+        # Hero Section: Text + Image
+        # Using columns to place Text left and Robot right
+        hero_text_col, hero_img_col = st.columns([1.5, 1], vertical_alignment="center")
         
-        with text_col:
-            st.markdown("""
-            <h1 style='color: white; font-weight: bold; font-size: 55px; line-height: 1.1; text-align: right; margin: 0; white-space: nowrap;'>ASK ME<br>ANYTHING</h1>
-            """, unsafe_allow_html=True)
+        with hero_text_col:
+            # Right-aligned text to look like speech directed at the robot
+            st.markdown(
+                """
+                <h1 style='text-align: right; margin-right: 10px; font-size: 50px; line-height: 1.2;'>
+                ASK ME<br>ANYTHING
+                </h1>
+                """, 
+                unsafe_allow_html=True
+            )
             
-        with img_col:
-            st.image("assets/robot_v2.png", use_container_width=True) 
+        with hero_img_col:
+            st.image("assets/robot_saying.png", use_container_width=True)
 
-    # Right Column: Auth
-    with right_col:
-        st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-        st.markdown("<h3 style='color: white; font-weight: normal; margin-bottom: 10px;'></h3>", unsafe_allow_html=True)
-        st.image("https://cdn-icons-png.flaticon.com/512/4712/4712035.png", width=50)
+    # --- Right Column: Auth Forms ---
+    with c2:
+        # Centered Robot Logo using columns
+        logo_l, logo_c, logo_r = st.columns([1, 2, 1]) # Wider middle column for bigger logo
+        with logo_c:
+             # Process Image to be Circular using PIL (No CSS)
+             from PIL import Image, ImageDraw, ImageOps
+             
+             try:
+                 # Open Image
+                 original_image = Image.open("assets/logo_circle.jpg")
+                 
+                 # Create Circular Mask
+                 mask = Image.new("L", original_image.size, 0)
+                 draw = ImageDraw.Draw(mask)
+                 draw.ellipse((0, 0) + original_image.size, fill=255)
+                 
+                 # Apply Mask to a copy converted to RGBA
+                 circular_logo = ImageOps.fit(original_image, mask.size, centering=(0.5, 0.5))
+                 circular_logo.putalpha(mask)
+                 
+                 # Display Larger and Circular
+                 st.image(circular_logo, width=220)
+             except Exception as e:
+                 st.error(f"Logo Error: {e}")
+                 st.image("assets/logo_circle.jpg", width=220) # Fallback
         
-        st.markdown("<div style='height: 20px;'></div>", unsafe_allow_html=True)
+        # Tabs
+        tab_login, tab_signup = st.tabs(["Login", "Sign Up"])
         
-        tab1, tab2 = st.tabs(["Login", "Sign Up"])
-        
-        with tab1:
-            st.markdown("##### Login")
-            with st.form(key="login_form"):
-                login_user = st.text_input("Username", key="login_user", placeholder="Enter username")
-                login_pass = st.text_input("Password", type="password", key="login_pass", placeholder="Enter password")
-                st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-                login_submitted = st.form_submit_button("Login", type="primary", use_container_width=True)
+        with tab_login:
+            st.subheader("Login")
+            with st.form("login_form"):
+                user_login = st.text_input("Username", placeholder="Enter your username")
+                pass_login = st.text_input("Password", type="password", placeholder="Enter your password")
+                
+                # Type='primary' uses the Red color from config
+                submitted_login = st.form_submit_button("Login", type="primary", use_container_width=True)
             
-            if login_submitted:
-                try:
-                    resp = requests.post(f"{API_URL}/login", json={"username": login_user, "password": login_pass})
-                    if resp.status_code == 200:
-                        st.session_state.user = login_user
-                        # Fetch chats immediately on login
-                        try:
-                            chats_resp = requests.get(f"{API_URL}/history/{login_user}")
-                            if chats_resp.status_code == 200:
-                                st.session_state.user_chats = chats_resp.json()
-                        except:
-                            st.session_state.user_chats = {}
-                        st.success("Logged in!")
-                        st.rerun()
-                    else:
-                        st.error(resp.json().get('detail', 'Login failed'))
-                except Exception as e:
-                     st.error(f"Connection Error: {e}")
+            if submitted_login:
+                if not user_login or not pass_login:
+                    st.error("Please enter credentials.")
+                else:
+                    try:
+                        resp = requests.post(f"{API_URL}/login", json={"username": user_login, "password": pass_login})
+                        if resp.status_code == 200:
+                            st.session_state.user = user_login
+                            st.session_state.logged_in = True
+                            try:
+                                h_resp = requests.get(f"{API_URL}/history/{user_login}")
+                                st.session_state.user_chats = h_resp.json() if h_resp.status_code == 200 else {}
+                            except:
+                                st.session_state.user_chats = {}
+                            st.rerun()
+                        else:
+                            st.error(resp.json().get('detail', 'Login failed'))
+                    except Exception as e:
+                        st.error(f"Connection error: {e}")
 
-        with tab2:
-            st.markdown("##### Sign Up")
-            with st.form(key="signup_form"):
-                new_user = st.text_input("Username", key="new_user", placeholder="Choose a username")
-                new_pass = st.text_input("Password", type="password", key="new_pass", placeholder="Choose a password")
-                st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-                signup_submitted = st.form_submit_button("Sign Up", use_container_width=True)
-            
-            if signup_submitted:
-                try:
-                    resp = requests.post(f"{API_URL}/register", json={"username": new_user, "password": new_pass})
-                    if resp.status_code == 200:
-                        st.success("Registered! Please login.")
-                    else:
-                         st.error(f"Error: {resp.json().get('detail')}")
-                except Exception as e:
-                     st.error(f"Connection Error: {e}")
+        with tab_signup:
+            st.subheader("Sign Up")
+            with st.form("signup_form"):
+                new_user = st.text_input("New Username")
+                new_pass = st.text_input("New Password", type="password")
+                
+                st.write("")
+                submitted_signup = st.form_submit_button("Sign Up", type="primary", use_container_width=True)
+                
+            if submitted_signup:
+                if not new_user or not new_pass:
+                    st.error("Please fill out all fields.")
+                else:
+                    try:
+                        resp = requests.post(f"{API_URL}/register", json={"username": new_user, "password": new_pass})
+                        if resp.status_code == 200:
+                            st.success("Account created! Please log in.")
+                        else:
+                            st.error(resp.json().get('detail', 'Sign up failed'))
+                    except Exception as e:
+                        st.error(f"Connection error: {e}")
 
 else:
     # --- MAIN APP FLOW ---
