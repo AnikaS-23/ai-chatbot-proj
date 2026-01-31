@@ -48,21 +48,37 @@ The application follows a client-server model to ensure scalability and separati
 ## 📁 Project Structure
 
 ai_chatbot/
+
 │
+
 ├── app.py                 # Streamlit Frontend (UI & State Logic)
+
 ├── main.py                # FastAPI Server (API Entry Point)
+
 ├── auth.py                # Identity & Access Management
+
 ├── reset_password.py      # Administrative Security Utilities
+
 │
+
 ├── database.py            # Database connection (SQLite + SQLAlchemy)
+
 ├── models.py              # Database models
+
 ├── seed_db.py             # Initial database seeding
+
 │
+
 ├── assets/                # Branding & UI Graphics
+
 │
+
 ├── requirements.txt       # Project dependencies
+
 ├── .env                   # Environment variables (local only)
+
 ├── .gitignore             # Version control exclusions
+
 ├── chatbot.db             # SQLite database (local)
 
 Note: .env, virtual environment files, and database files are excluded from version control for security and best practices.
@@ -71,44 +87,59 @@ Note: .env, virtual environment files, and database files are excluded from vers
 
 
 ### 1️⃣ Clone the Repository
-
+```bash
 git clone https://github.com/AnikaS-23/ai-chatbot-proj.git
 
 cd ai-chatbot-proj
+```
 
 2️⃣ Create Virtual Environment
+```bash
 
 python -m venv venv
 
 venv\\Scripts\\activate   # Windows
+```
 
 3️⃣ Install Dependencies
+```bash
 
 pip install -r requirements.txt
+```
 
 4️⃣ Environment Variables
 
 Create a .env file:
+```env
 
 GROQ\_API\_KEY=your\_groq\_api\_key\_here
+```
 
 ▶️ Running the Application
 
 Start Backend (FastAPI)
+```bash 
 
 python main.py
+```
 
 Backend runs at:
+```arduino
 
 http://localhost:8000
+```
 
 Start Frontend (Streamlit)
+```bash
 
 streamlit run app.py
+```
 
 Frontend runs at:
+```arduino
 
 http://localhost:8501
+```
 
 ---
 
