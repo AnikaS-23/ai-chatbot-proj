@@ -60,14 +60,18 @@ def register(user_data: UserAuth, db: Session = Depends(get_db)):
 
 @app.post("/login")
 def login(user_data: UserAuth, db: Session = Depends(get_db)):
+    print(f"DEBUG: Login attempt for username='{user_data.username}'")
     user = db.query(User).filter(User.username == user_data.username).first()
     if not user:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        print(f"DEBUG: User '{user_data.username}' NOT FOUND in database.")
+        raise HTTPException(status_code=401, detail="Invalid credentials (User not found)")
     
     if bcrypt.checkpw(user_data.password.encode('utf-8'), user.password_hash.encode('utf-8')):
+        print(f"DEBUG: Password match for '{user_data.username}'. Login successful.")
         return {"message": "Login successful", "username": user.username}
     
-    raise HTTPException(status_code=401, detail="Invalid credentials")
+    print(f"DEBUG: Password Mismatch for '{user_data.username}'.")
+    raise HTTPException(status_code=401, detail="Invalid credentials (Password mismatch)")
 
 @app.get("/history/{username}")
 def get_history(username: str, db: Session = Depends(get_db)):

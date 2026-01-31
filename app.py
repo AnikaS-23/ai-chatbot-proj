@@ -20,6 +20,100 @@ SYSTEM_PROMPT = "You are a helpful AI assistant."
 
 st.set_page_config(page_title="AI Chatbot", page_icon="🤖", layout="wide", initial_sidebar_state="expanded")
 
+# --- Global Custom CSS ---
+st.markdown("""
+<style>
+    /* --- General App Styling --- */
+    
+    /* Reduce main content width for better readability */
+    .main > div {
+        max-width: 800px;
+        margin: auto;
+    }
+
+    /* --- Sidebar Polish --- */
+    section[data-testid="stSidebar"] {
+        padding-top: 2rem;
+        background-color: #121212; /* Darker background */
+    }
+    
+    /* Sidebar Buttons: Rounded & Softer Borders */
+    div[data-testid="stSidebar"] button {
+        border-radius: 12px !important;
+        border: 1px solid #333 !important;
+        transition: all 0.3s ease;
+    }
+    div[data-testid="stSidebar"] button:hover {
+        border-color: #555 !important;
+        background-color: #262730 !important;
+    }
+
+    /* --- Chat Bubbles (User & Assistant) --- */
+    
+    /* User Message Bubble */
+    div[data-testid="chat-message-user"] {
+        background-color: #2b2c34 !important; /* Slightly lighter than bg */
+        color: #ffffff !important;
+        padding: 1rem;
+        border-radius: 15px 15px 0 15px !important; /* Rounded with one sharp corner */
+        margin-bottom: 1rem;
+        border: 1px solid #3d3d3d;
+        width: fit-content;
+        margin-left: auto; /* Align right */
+        max-width: 80%;
+    }
+    
+    /* Assistant Message Bubble */
+    div[data-testid="chat-message-assistant"] {
+        background-color: #1e1e1e !important;
+        color: #eeeeee !important;
+        padding: 1rem;
+        border-radius: 15px 15px 15px 0 !important;
+        margin-bottom: 1rem;
+        border: 1px solid #333;
+        width: fit-content;
+        margin-right: auto; /* Align left */
+        max-width: 80%;
+    }
+    
+    /* Avatar adjustments if needed */
+    div[data-testid="stChatMessageAvatar"] {
+        margin-top: auto;
+        margin-bottom: 10px;
+    }
+
+    /* Input Fields (Login Page & Chat Input) */
+    div[data-testid="stTextInput"] input {
+        background-color: #1E1E1E !important;
+        color: #E0E0E0 !important;
+        border: 1px solid #333333 !important;
+        border-radius: 8px !important;
+    }
+    div[data-testid="stTextInput"] input:focus {
+        border: 1px solid #FF4B4B !important;
+        box-shadow: none !important;
+    }
+    
+    /* Buttons (General) */
+    div[data-testid="stButton"] button {
+        border-radius: 8px !important;
+    }
+    
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 10px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        padding-right: 20px;
+    }
+    
+    /* Active Tab Underline */
+    div[data-baseweb="tab-highlight"] {
+        background-color: #FF4B4B !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Session State Initialization
 if "user" not in st.session_state:
     st.session_state.user = None
@@ -33,40 +127,8 @@ if "user_chats" not in st.session_state:
 # --- AUTHENTICATION FLOW ---
 if not st.session_state.user:
     
-    # Custom CSS for Login Page Styling
-    st.markdown("""
-    <style>
-        /* Input Fields */
-        div[data-testid="stTextInput"] input {
-            background-color: #1E1E1E !important;
-            color: #E0E0E0 !important;
-            border: 1px solid #333333 !important;
-            border-radius: 8px !important;
-        }
-        div[data-testid="stTextInput"] input:focus {
-            border: 1px solid #FF4B4B !important;
-            box-shadow: none !important;
-        }
-        
-        /* Buttons */
-        div[data-testid="stButton"] button {
-            border-radius: 8px !important;
-        }
-        
-        /* Tabs */
-        .stTabs [data-baseweb="tab-list"] {
-            gap: 10px;
-        }
-        .stTabs [data-baseweb="tab"] {
-            padding-right: 20px;
-        }
-        
-        /* Active Tab Underline */
-        div[data-baseweb="tab-highlight"] {
-            background-color: #FF4B4B !important;
-        }
-    </style>
-    """, unsafe_allow_html=True)
+    # Custom CSS for Login Page Styling moved to Global
+
     
     # Create two equal columns with large gap
     left_col, right_col = st.columns(2, gap="large")
