@@ -160,10 +160,13 @@ if not st.session_state.user:
         
         with tab1:
             st.markdown("##### Login")
-            login_user = st.text_input("Username", key="login_user", placeholder="Enter username")
-            login_pass = st.text_input("Password", type="password", key="login_pass", placeholder="Enter password")
-            st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-            if st.button("Login", type="primary", use_container_width=True):
+            with st.form(key="login_form"):
+                login_user = st.text_input("Username", key="login_user", placeholder="Enter username")
+                login_pass = st.text_input("Password", type="password", key="login_pass", placeholder="Enter password")
+                st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+                login_submitted = st.form_submit_button("Login", type="primary", use_container_width=True)
+            
+            if login_submitted:
                 try:
                     resp = requests.post(f"{API_URL}/login", json={"username": login_user, "password": login_pass})
                     if resp.status_code == 200:
@@ -184,10 +187,13 @@ if not st.session_state.user:
 
         with tab2:
             st.markdown("##### Sign Up")
-            new_user = st.text_input("Username", key="new_user", placeholder="Choose a username")
-            new_pass = st.text_input("Password", type="password", key="new_pass", placeholder="Choose a password")
-            st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-            if st.button("Sign Up", use_container_width=True):
+            with st.form(key="signup_form"):
+                new_user = st.text_input("Username", key="new_user", placeholder="Choose a username")
+                new_pass = st.text_input("Password", type="password", key="new_pass", placeholder="Choose a password")
+                st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
+                signup_submitted = st.form_submit_button("Sign Up", use_container_width=True)
+            
+            if signup_submitted:
                 try:
                     resp = requests.post(f"{API_URL}/register", json={"username": new_user, "password": new_pass})
                     if resp.status_code == 200:
