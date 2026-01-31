@@ -181,7 +181,7 @@ if not st.session_state.user:
                         st.success("Logged in!")
                         st.rerun()
                     else:
-                        st.error(f"Login failed: {resp.status_code} - {resp.json().get('detail', 'Unknown error')}")
+                        st.error(resp.json().get('detail', 'Login failed'))
                 except Exception as e:
                      st.error(f"Connection Error: {e}")
 

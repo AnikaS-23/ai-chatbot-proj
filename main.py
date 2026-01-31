@@ -64,7 +64,7 @@ def login(user_data: UserAuth, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == user_data.username).first()
     if not user:
         print(f"DEBUG: User '{user_data.username}' NOT FOUND in database.")
-        raise HTTPException(status_code=401, detail="Invalid credentials (User not found)")
+        raise HTTPException(status_code=404, detail="User not found. Please sign up.")
     
     if bcrypt.checkpw(user_data.password.encode('utf-8'), user.password_hash.encode('utf-8')):
         print(f"DEBUG: Password match for '{user_data.username}'. Login successful.")
