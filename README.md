@@ -4,7 +4,6 @@ AI ChatRobo is a high-performance, full-stack AI chatbot application built entir
 
 By leveraging **Groq’s LLaMA 3.1** inference engine, AI ChatRobo delivers near-instantaneous, streaming AI responses with persistent chat memory.
 
----
 
 ## 🛠 Technical Architecture
 
@@ -15,7 +14,6 @@ The application follows a client-server model to ensure scalability and separati
 * **Inference Layer:** Groq Cloud API utilizing the `llama-3.1-8b-instant` model for high-throughput NLP.
 * **Data Layer:** SQLite with SQLAlchemy ORM, providing a reliable persistent storage solution for users and chat telemetry.
 
----
 
 ## 🚀 Key Features
 
@@ -33,7 +31,6 @@ The application follows a client-server model to ensure scalability and separati
 * **SQLAlchemy ORM:** Provides an abstraction layer for easy migration to enterprise databases like PostgreSQL or MySQL.
 * **Thread Safety:** Implements dependency injection for safe, concurrent database connections.
 
----
 
 ## 🧱 Tech Stack
 
@@ -51,13 +48,21 @@ The application follows a client-server model to ensure scalability and separati
 ## 📁 Project Structure
 
 ai_chatbot/
+|
 ├── app.py              # Streamlit Frontend (UI & State Logic)
+|
 ├── main.py             # FastAPI Server (API Entry Point)
+|
 ├── auth.py             # Logic for Identity & Access Management
+|
 ├── reset_password.py   # Administrative Security Utilities
+|
 ├── assets/             # Branding & UI Graphics
+|
 ├── .env                # Environment Variables (Local Only)
+|
 ├── .gitignore          # Version Control Exclusions
+|
 └── requirements.txt    # Project Dependencies
 
 
@@ -104,10 +109,9 @@ Frontend runs at:
 
 http://localhost:8501
 
+---
 
-## 
-
-🧪 How It Works (Architecture)
+### 🧪 How It Works (Architecture)
 
 User (Browser)
 
@@ -131,10 +135,9 @@ Groq LLM API
 
 - Chat responses are streamed token-by-token
 
+---
 
-## 
-
-🔒 Security Notes
+### 🔒 Security Notes
 
 API keys stored in .env
 
