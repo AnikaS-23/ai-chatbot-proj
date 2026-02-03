@@ -20,7 +20,7 @@ SYSTEM_PROMPT = "You are a helpful AI assistant."
 
 st.set_page_config(page_title="AI Chatbot", page_icon="🤖", layout="wide", initial_sidebar_state="expanded")
 
-# --- Global Custom CSS ---
+# --- Global Custom CSS (Login & Base) ---
 st.markdown("""
 <style>
     /* --- General App Styling --- */
@@ -48,22 +48,19 @@ st.markdown("""
         background-color: #262730 !important;
     }
 
-    /* --- Chat Bubbles (User & Assistant) --- */
-    
-    /* User Message Bubble */
+    /* --- Chat Bubbles (Base) --- */
     div[data-testid="chat-message-user"] {
-        background-color: #2b2c34 !important; /* Slightly lighter than bg */
+        background-color: #2b2c34 !important;
         color: #ffffff !important;
         padding: 1rem;
-        border-radius: 15px 15px 0 15px !important; /* Rounded with one sharp corner */
+        border-radius: 15px 15px 0 15px !important;
         margin-bottom: 1rem;
         border: 1px solid #3d3d3d;
         width: fit-content;
-        margin-left: auto; /* Align right */
+        margin-left: auto;
         max-width: 80%;
     }
     
-    /* Assistant Message Bubble */
     div[data-testid="chat-message-assistant"] {
         background-color: #1e1e1e !important;
         color: #eeeeee !important;
@@ -72,17 +69,11 @@ st.markdown("""
         margin-bottom: 1rem;
         border: 1px solid #333;
         width: fit-content;
-        margin-right: auto; /* Align left */
+        margin-right: auto;
         max-width: 80%;
     }
-    
-    /* Avatar adjustments if needed */
-    div[data-testid="stChatMessageAvatar"] {
-        margin-top: auto;
-        margin-bottom: 10px;
-    }
 
-    /* Input Fields (Login Page & Chat Input) */
+    /* Input Fields (Base) */
     div[data-testid="stTextInput"] input {
         background-color: #1E1E1E !important;
         color: #E0E0E0 !important;
@@ -94,21 +85,15 @@ st.markdown("""
         box-shadow: none !important;
     }
     
-    /* Buttons (General) */
-    div[data-testid="stButton"] button {
-        border-radius: 8px !important;
-    }
-    
     /* Tabs */
     .stTabs [data-baseweb="tab-list"] {
         gap: 10px;
     }
-    .stTabs [data-baseweb="tab"] {
-        padding-right: 20px;
+    .stTabs [data-baseweb="tab-highlight"] {
+        background-color: #FF4B4B !important;
     }
-    
-    /* Active Tab Underline */
-    div[data-baseweb="tab-highlight"] {
+
+    .stTabs [data-baseweb="tab-highlight"] {
         background-color: #FF4B4B !important;
     }
 </style>
@@ -355,38 +340,27 @@ else:
                 placeholder.markdown(full_response)
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
                 
-                # --- IMMEDIATE TITLE UPDATE & SYNC LOGIC ---
-                
-                # 1. Update Local Cache Immediately
+                # --- SYNC LOGIC ---
                 if st.session_state.current_chat_id not in st.session_state.user_chats:
                      st.session_state.user_chats[st.session_state.current_chat_id] = {"title": "New Chat", "messages": []}
                 
                 st.session_state.user_chats[st.session_state.current_chat_id]["messages"] = st.session_state.messages
                 
-                # 2. Check for Title Generation (On 1st turn)
                 current_title = st.session_state.user_chats[st.session_state.current_chat_id].get("title", "New Chat")
                 
                 if current_title == "New Chat" and len(st.session_state.messages) >= 2:
-                    # Generate Title
                     first_msg = next((m["content"] for m in st.session_state.messages if m["role"] == "user"), "")
                     if first_msg:
                         new_title = (first_msg[:20] + '..') if len(first_msg) > 20 else first_msg
-                        
-                        # Update Local
                         st.session_state.user_chats[st.session_state.current_chat_id]["title"] = new_title
-                        
-                        # Save Async-ish (requests is sync, but we do it before rerun)
                         requests.post(f"{API_URL}/history/save", json={
                             "username": user,
                             "chat_id": st.session_state.current_chat_id,
                             "title": new_title,
                             "messages": st.session_state.messages
                         })
-                        
-                        # RERUN to update Sidebar Title Instantly
                         st.rerun()
                 
-                # 3. Save Context (If not rerunning)
                 requests.post(f"{API_URL}/history/save", json={
                     "username": user,
                     "chat_id": st.session_state.current_chat_id,

@@ -5,6 +5,13 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import List, Dict, Any
 import bcrypt
+import os
+from groq import Groq
+from dotenv import load_dotenv
+from fastapi.responses import StreamingResponse
+import json
+
+load_dotenv()
 
 from database import engine, get_db, Base
 from models import User, Chat
@@ -13,6 +20,9 @@ from models import User, Chat
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+
+# Groq Client setup
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 # Add CORS Middleware
 app.add_middleware(
@@ -33,6 +43,10 @@ class ChatData(BaseModel):
     chat_id: str
     title: str
     messages: List[Dict]
+
+class ChatRequest(BaseModel):
+    messages: List[Dict]
+    mode: str
 
 # --- Endpoints ---
 
@@ -125,3 +139,45 @@ def clear_history(username: str, db: Session = Depends(get_db)):
         return {"status": "cleared"}
     
     raise HTTPException(status_code=404, detail="User not found")
+
+@app.post("/chat")
+async def chat_endpoint(request: ChatRequest):
+    """
+    Handles streaming chat responses based on the selected mode.
+    """
+    mode = request.mode
+    messages = request.messages
+    
+    # Mode-based configuration
+    if mode == "Fast AI":
+        system_prompt = "You are a helpful AI assistant. Provide extremely brief and concise answers."
+        temperature = 0.2
+    elif mode == "Deep Search":
+        system_prompt = "You are a detail-oriented AI assistant. Break down your answer into clear, logical steps and provide in-depth reasoning."
+        temperature = 0.4
+    elif mode == "Creative Mode":
+        system_prompt = "You are a creative and imaginative AI assistant. Use expressive language, metaphors, and vibrant descriptions."
+        temperature = 0.8
+    else:
+        system_prompt = "You are a helpful AI assistant."
+        temperature = 0.5
+
+    async def generate_response():
+        try:
+            stream = client.chat.completions.create(
+                model="llama-3.1-8b-instant",
+                messages=[{"role": "system", "content": system_prompt}] + messages,
+                temperature=temperature,
+                stream=True
+            )
+            for chunk in stream:
+                if chunk.choices and chunk.choices[0].delta.content:
+                    yield chunk.choices[0].delta.content
+        except Exception as e:
+            yield f"Error: {str(e)}"
+
+    return StreamingResponse(generate_response(), media_type="text/plain")
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
